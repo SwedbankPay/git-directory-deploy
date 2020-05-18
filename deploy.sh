@@ -3,7 +3,7 @@ set -o errexit #abort if any command fails
 me=$(basename "$0")
 
 help_message="\
-Usage: $me [-c FILE] [<options>]
+Usage: "$me" [-c FILE] [<options>]
 Deploy generated files to a git branch.
 
 Options:
@@ -122,11 +122,11 @@ main() {
 		return 1
 	fi
 
-	if git ls-remote --exit-code $repo "refs/heads/$deploy_branch" ; then
+	if git ls-remote --exit-code "$repo" "refs/heads/$deploy_branch" ; then
 		# deploy_branch exists in $repo; make sure we have the latest version
 		
 		disable_expanded_output
-		git fetch --force $repo $deploy_branch:$deploy_branch
+		git fetch --force "$repo" "$deploy_branch:$deploy_branch"
 		enable_expanded_output
 	fi
 
@@ -140,14 +140,14 @@ main() {
 }
 
 initial_deploy() {
-	git --work-tree "$deploy_directory" checkout --orphan $deploy_branch
+	git --work-tree "$deploy_directory" checkout --orphan "$deploy_branch"
 	git --work-tree "$deploy_directory" add --all
 	commit+push
 }
 
 incremental_deploy() {
 	#make deploy_branch the current branch
-	git symbolic-ref HEAD refs/heads/$deploy_branch
+	git symbolic-ref HEAD "refs/heads/$deploy_branch"
 	#put the previously committed contents of deploy_branch into the index
 	git --work-tree "$deploy_directory" reset --mixed --quiet
 	git --work-tree "$deploy_directory" add --all
@@ -155,12 +155,12 @@ incremental_deploy() {
 	set +o errexit
 	diff=$(git --work-tree "$deploy_directory" diff --exit-code --quiet HEAD --)$?
 	set -o errexit
-	case $diff in
-		0) echo No changes to files in $deploy_directory. Skipping commit.;;
+	case "$diff" in
+		0) echo "No changes to files in $deploy_directory. Skipping commit.";;
 		1) commit+push;;
 		*)
-			echo git diff exited with code $diff. Aborting. Staying on branch $deploy_branch so you can debug. To switch back to master, use: git symbolic-ref HEAD refs/heads/master && git reset --mixed >&2
-			return $diff
+			echo "git diff exited with code $diff. Aborting. Staying on branch $deploy_branch so you can debug. To switch back to master, use: git symbolic-ref HEAD refs/heads/master && git reset --mixed >&2"
+			return "$diff"
 			;;
 	esac
 }
@@ -171,7 +171,7 @@ commit+push() {
 
 	disable_expanded_output
 	#--quiet is important here to avoid outputting the repo URL, which may contain a secret token
-	git push --quiet $repo $deploy_branch
+	git push --quiet "$repo" "$deploy_branch"
 	enable_expanded_output
 }
 
@@ -203,9 +203,9 @@ set_user_id() {
 restore_head() {
 	if [[ $previous_branch = "HEAD" ]]; then
 		#we weren't on any branch before, so just set HEAD back to the commit it was on
-		git update-ref --no-deref HEAD $commit_hash $deploy_branch
+		git update-ref --no-deref HEAD "$commit_hash" "$deploy_branch"
 	else
-		git symbolic-ref HEAD refs/heads/$previous_branch
+		git symbolic-ref HEAD "refs/heads/$previous_branch"
 	fi
 	
 	git reset --mixed
