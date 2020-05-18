@@ -41,6 +41,7 @@ jobs:
       run: mkdir -p _site
 
     - uses: docker://pandoc/core:2.9
+      name: Pandoc Convert
       with:
         args: --from=markdown --to=html5 --output=_site/index.html readme.md
     
@@ -48,5 +49,5 @@ jobs:
       env:
         GIT_DEPLOY_DIR: _site
         GIT_DEPLOY_BRANCH: gh-pages
-        GIT_DEPLOY_REPO: ${{ github.repository }}
+        GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
       run: ./deploy.sh
