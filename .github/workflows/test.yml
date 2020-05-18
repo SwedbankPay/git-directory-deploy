@@ -48,6 +48,32 @@ jobs:
     - name: Deploy
       env:
         GIT_DEPLOY_DIR: _site
-        GIT_DEPLOY_BRANCH: gh-pages
+        GIT_DEPLOY_BRANCH: ${GITHUB_SHA::8}
         GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
       run: ./deploy.sh
+
+    - name: Verify deployment
+      env:
+        GIT_SHA: ${GITHUB_SHA::8}
+      run: |
+        git checkout ${GIT_SHA}
+        if [[ ! -f index.html ]]; then
+            echo 'index.html missing. Aborting.'
+            exit 1
+        fi
+
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    steps:
+      - name: Cleanup
+        env:
+          GIT_SHA: ${GITHUB_SHA::8}
+        run: |
+            if git show-ref --verify --quiet refs/heads/${GIT_SHA}; then
+                echo "Branch '${GIT_SHA}' found. Deleting"
+                git branch -d ${GIT_SHA}
+            fi
+    
