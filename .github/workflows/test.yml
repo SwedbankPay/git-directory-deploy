@@ -6,6 +6,8 @@ jobs:
   id:
     name: ID
     runs-on: ubuntu-latest
+    outputs:
+      sha8: ${{ steps.id.outputs.sha8 }}
     steps:
     - name: Generate ID
       id: id
@@ -62,13 +64,13 @@ jobs:
     - name: Deploy
       env:
         GIT_DEPLOY_DIR: _site
-        GIT_DEPLOY_BRANCH: ${{ needs.id.steps.id.outputs.sha8 }}
+        GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.sha8 }}
         GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
       run: ./deploy.sh
 
     - name: Verify deployment
       env:
-        SHA8: ${{ needs.id.steps.id.outputs.sha8 }}
+        SHA8: ${{ needs.id.outputs.sha8 }}
       run: |
         git checkout ${SHA8}
         ls -la
@@ -80,7 +82,7 @@ jobs:
     - name: Cleanup
       if: always()
       env:
-        SHA8: ${{ needs.id.steps.id.outputs.sha8 }}
+        SHA8: ${{ needs.id.outputs.sha8 }}
       run: |
           if git show-ref --verify --quiet refs/heads/${SHA8}; then
               echo "Branch '${SHA8}' found. Deleting"
