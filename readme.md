@@ -19,7 +19,7 @@ Download the script and make it executable. It can be done with `wget` and
 `chmod` as follows:
 
 ```shell
-wget https://raw.githubusercontent.com/SwedbankPay/git-directory-deploy/1.0.0/deploy.sh
+wget https://github.com/SwedbankPay/git-directory-deploy/raw/1.0.0/deploy.sh
 chmod +x deploy.sh
 ```
 
