@@ -91,6 +91,14 @@ main() {
 
 	enable_expanded_output
 
+	# Initialize Git if there's no .git folder
+	if [[ ! -d ".git" ]]; then
+		git init
+		set_user_id
+		git add --all .
+		git commit --message 'Initial commit'
+	fi
+
 	if ! git diff --exit-code --quiet --cached; then
 		echo Aborting due to uncommitted changes in the index >&2
 		return 1
