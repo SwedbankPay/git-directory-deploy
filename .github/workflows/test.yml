@@ -7,16 +7,14 @@ jobs:
     name: ID
     runs-on: ubuntu-latest
     outputs:
-      sha8: ${{ steps.id.outputs.sha8 }}
+      id: ${{ steps.id.outputs.id }}
     steps:
     - name: Generate ID
       id: id
-      env:
-        GIT_SHA: ${{ github.sha }}
       run: |
-        SHA8=$(echo ${GIT_SHA} | cut -c1-8)
-        echo "Sha: ${SHA8}"
-        echo "::set-output name=sha8::${SHA8}"
+        ID="r${{ github.run_id }}-${{ github.run_number }}"
+        echo "ID: ${ID}"
+        echo "::set-output name=id::${ID}"
 
   bats:
     name: BATS
@@ -64,15 +62,15 @@ jobs:
     - name: Deploy
       env:
         GIT_DEPLOY_DIR: _site
-        GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.sha8 }}
+        GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.id }}
         GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
       run: ./deploy.sh
 
     - name: Verify deployment
       env:
-        SHA8: ${{ needs.id.outputs.sha8 }}
+        ID: ${{ needs.id.outputs.id }}
       run: |
-        git checkout ${SHA8}
+        git checkout ${ID}
         ls -la
         if [[ ! -f index.html ]]; then
             echo 'index.html missing. Aborting.'
@@ -82,12 +80,12 @@ jobs:
     - name: Cleanup
       if: always()
       env:
-        SHA8: ${{ needs.id.outputs.sha8 }}
+        ID: ${{ needs.id.outputs.id }}
       run: |
           git checkout --force ${{ github.sha }}
-          if git show-ref --verify --quiet "refs/heads/${SHA8}"; then
-              echo "Branch '${SHA8}' found. Deleting"
-              git branch --delete --force "${SHA8}"
-              git push --delete origin "${SHA8}"
+          if git show-ref --verify --quiet "refs/heads/${ID}"; then
+              echo "Branch '${ID}' found. Deleting"
+              git branch --delete --force "${ID}"
+              git push --delete origin "${ID}"
           fi
   
