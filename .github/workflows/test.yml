@@ -9,10 +9,6 @@ jobs:
     outputs:
       sha8: ${{ steps.id.outputs.sha8 }}
     steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"    
     - name: Generate ID
       id: id
       env:
@@ -88,7 +84,7 @@ jobs:
       env:
         SHA8: ${{ needs.id.outputs.sha8 }}
       run: |
-          git checkout --force ${{ github.ref }}
+          git checkout --force ${{ github.sha }}
           if git show-ref --verify --quiet "refs/heads/${SHA8}"; then
               echo "Branch '${SHA8}' found. Deleting"
               git branch --delete --force "${SHA8}"
