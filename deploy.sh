@@ -3,7 +3,7 @@ set -o errexit #abort if any command fails
 me=$(basename "$0")
 
 help_message="\
-Usage: "$me" [-c FILE] [<options>]
+Usage: $me [-c FILE] [<options>]
 Deploy generated files to a git branch.
 
 Options:
