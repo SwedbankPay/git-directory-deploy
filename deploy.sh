@@ -33,6 +33,7 @@ file specified by the '--config-file' option."
 parse_args() {
 	# Set args from a local environment file.
 	if [ -e ".env" ]; then
+		# shellcheck disable=SC1091
 		source .env
 	fi
 
