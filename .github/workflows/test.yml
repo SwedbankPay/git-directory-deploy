@@ -84,8 +84,10 @@ jobs:
       env:
         SHA8: ${{ needs.id.outputs.sha8 }}
       run: |
-          if git show-ref --verify --quiet refs/heads/${SHA8}; then
+          git checkout --force ${{ github.ref }}
+          if git show-ref --verify --quiet "refs/heads/${SHA8}"; then
               echo "Branch '${SHA8}' found. Deleting"
-              git branch -d ${SHA8}
+              git branch --delete --force "${SHA8}"
+              git push --delete origin "${SHA8}"
           fi
   
