@@ -8,7 +8,7 @@ committed to the source branch. It keeps a linear history on the deploy branch
 and does not make superfluous commits or deploys when the generated files do not
 change.
 
-![Test][test-badge]
+![Test status][test-badge]
 
 For an example of use, see [X1011/verge-mobile-bingo][verge-mobile-bingo]. For
 development info, see [contributing.md][contributing].
@@ -19,9 +19,13 @@ Download the script and make it executable. It can be done with `wget` and
 `chmod` as follows:
 
 ```shell
-wget https://github.com/SwedbankPay/git-directory-deploy/raw/master/deploy.sh
+wget https://raw.githubusercontent.com/SwedbankPay/git-directory-deploy/1.0.0/deploy.sh
 chmod +x deploy.sh
 ```
+
+Replace `1.0.0` in the URL with whatever version number of `deploy.sh` you would
+like. Pinning to a Git tag instead of `master` ensures that no breaking changes
+are pulled down unintentionally.
 
 Then and edit these variables within it as needed to fit your project:
 
