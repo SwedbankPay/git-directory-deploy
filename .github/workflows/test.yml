@@ -3,8 +3,8 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test:
-    name: Test
+  bats:
+    name: BATS
     runs-on: ubuntu-latest
 
     steps:
@@ -17,3 +17,13 @@ jobs:
 
     - name: Run BATS test
       run: bats . lib
+
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Shellcheck
+      uses: bewuethr/shellcheck-action@v2
