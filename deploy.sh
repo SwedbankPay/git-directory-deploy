@@ -78,7 +78,7 @@ parse_args() {
 	#if no user identity is already set in the current git environment, use this:
 	default_username=${GIT_DEPLOY_USERNAME:-deploy.sh}
 	
- 	default_email=${GIT_DEPLOY_EMAIL:-$(git log -n 1 --format="%ae")} 
+ 	default_email=${GIT_DEPLOY_EMAIL:-} 
 
 	#repository to deploy to. must be readable and writable.
 	repo=${GIT_DEPLOY_REPO:-origin}
@@ -202,7 +202,12 @@ disable_expanded_output() {
 
 set_user_id() {
 	if [[ -z $(git config user.name) ]]; then
-		git config user.name "$default_username"
+		if [ -z "$default_username" ]
+		then
+			git config user.name $(git log -n 1 --format="%ae")
+		else
+			git config user.name "$default_username"
+		fi
 	fi
 	if [[ -z $(git config user.email) ]]; then
 		git config user.email "$default_email"
