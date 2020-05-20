@@ -78,7 +78,7 @@ parse_args() {
 	#if no user identity is already set in the current git environment, use this:
 	default_username=${GIT_DEPLOY_USERNAME:-deploy.sh}
 	
- 	default_email=${GIT_DEPLOY_EMAIL:$(git log -n 1 --format="%ae")} 
+ 	default_email=${GIT_DEPLOY_EMAIL:-$(git log -n 1 --format="%ae")} 
 
 	#repository to deploy to. must be readable and writable.
 	repo=${GIT_DEPLOY_REPO:-origin}
