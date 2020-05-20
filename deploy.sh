@@ -201,16 +201,14 @@ disable_expanded_output() {
 
 set_user_id() {
 	if [[ -z $(git config user.name) ]]; then
-	  if [[ -z "$default_username" ]]
-    then
+	  if [[ -z "$default_username" ]]; then
 		  git config user.name "$(git log -n 1 --format="%an")"
     else
       git config user.name "$default_username"
     fi
 	fi
 	if [[ -z $(git config user.email) ]]; then
-	  if [[ -z "$default_email" ]]
-    then
+	  if [[ -z "$default_email" ]]; then
 		  git config user.email "$(git log -n 1 --format="%ae")"
     else
 		  git config user.email "$default_email"
