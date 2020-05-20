@@ -209,7 +209,12 @@ set_user_id() {
     fi
 	fi
 	if [[ -z $(git config user.email) ]]; then
-		git config user.email "$default_email"
+	  if [[ -z "$default_email" ]]
+    then
+		  git config user.email "$(git log -n 1 --format="%ae")"
+    else
+		  git config user.email "$default_email"
+    fi
 	fi
 }
 
