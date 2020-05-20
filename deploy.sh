@@ -203,7 +203,7 @@ set_user_id() {
 	if [[ -z $(git config user.name) ]]; then
 	  if [[ -z "$default_username" ]]
     then
-		  git config user.name "$(git log -n 1 --format="%ae")"
+		  git config user.name "$(git log -n 1 --format="%an")"
     else
       git config user.name "$default_username"
     fi
