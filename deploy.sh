@@ -75,15 +75,17 @@ parse_args() {
 	deploy_directory=${GIT_DEPLOY_DIR:-dist}
 	deploy_branch=${GIT_DEPLOY_BRANCH:-gh-pages}
 
-	#if no user identity is already set in the current git environment, use this:
-	default_username=${GIT_DEPLOY_USERNAME:-"$(git log -n 1 --format="%an")"}
-	default_email=${GIT_DEPLOY_EMAIL:-"$(git log -n 1 --format="%ae")"}
-
 	#repository to deploy to. must be readable and writable.
 	repo=${GIT_DEPLOY_REPO:-origin}
 
 	#append commit hash to the end of message by default
 	append_hash=${GIT_DEPLOY_APPEND_HASH:-true}
+}
+
+set_git_defaults() {
+	#if no user identity is already set in the current git environment, use this:
+	default_username=${GIT_DEPLOY_USERNAME:-"$(git log -n 1 --format="%an")"}
+	default_email=${GIT_DEPLOY_EMAIL:-"$(git log -n 1 --format="%ae")"}
 }
 
 main() {
@@ -98,6 +100,8 @@ main() {
 		git add --all .
 		git commit --message 'Initial commit'
 	fi
+
+	set_git_defaults
 
 	if ! git diff --exit-code --quiet --cached; then
 		echo Aborting due to uncommitted changes in the index >&2
