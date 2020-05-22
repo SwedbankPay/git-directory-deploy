@@ -101,8 +101,6 @@ main() {
 		git commit --message 'Initial commit'
 	fi
 
-	set_git_defaults
-
 	if ! git diff --exit-code --quiet --cached; then
 		echo Aborting due to uncommitted changes in the index >&2
 		return 1
@@ -141,6 +139,8 @@ main() {
 		git fetch --force "$repo" "$deploy_branch:$deploy_branch"
 		enable_expanded_output
 	fi
+	
+	set_git_defaults
 
 	# check if deploy_branch exists locally
 	if git show-ref --verify --quiet "refs/heads/$deploy_branch"
