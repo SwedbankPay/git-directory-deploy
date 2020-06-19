@@ -18,6 +18,7 @@ Options:
   -c, --config-file PATH   Override default & environment variables' values
                            with those in set in the file at 'PATH'. Must be the
                            first option specified.
+  -d, --dry-run			   Complete the deploy, but don't push it to the remote.
 
 Variables:
 
@@ -62,6 +63,9 @@ parse_args() {
 			shift 2
 		elif [[ $1 = "-n" || $1 = "--no-hash" ]]; then
 			GIT_DEPLOY_APPEND_HASH=false
+			shift
+		elif [[ $1 = "-d" || $1 = "--dry-run" ]]; then
+			dry_run=true
 			shift
 		else
 			break
@@ -178,8 +182,10 @@ commit+push() {
 	git --work-tree "$deploy_directory" commit -m "$commit_message"
 
 	disable_expanded_output
-	#--quiet is important here to avoid outputting the repo URL, which may contain a secret token
-	git push --quiet "$repo" "$deploy_branch"
+	if [ "$dry_run" != "true" ]; then
+		#--quiet is important here to avoid outputting the repo URL, which may contain a secret token
+		git push --quiet "$repo" "$deploy_branch"
+	fi
 	enable_expanded_output
 }
 
