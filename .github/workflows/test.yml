@@ -36,12 +36,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Shellcheck
-      uses: reviewdog/action-shellcheck@v1
+    - uses: reviewdog/action-shellcheck@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-pr-review
         level: style
+
+    - uses: bewuethr/shellcheck-action@v2
 
   deploy:
     name: Deploy
