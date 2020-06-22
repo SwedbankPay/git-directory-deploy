@@ -4,89 +4,127 @@ on: [push, pull_request]
 
 jobs:
   id:
-    name: ID
     runs-on: ubuntu-latest
     outputs:
       id: ${{ steps.id.outputs.id }}
     steps:
-    - name: Generate ID
-      id: id
-      run: |
-        ID="r${{ github.run_id }}-${{ github.run_number }}"
-        echo "ID: ${ID}"
-        echo "::set-output name=id::${ID}"
+      - id: id
+        run: |
+          ID="r${{ github.run_id }}-${{ github.run_number }}"
+          echo "ID: ${ID}"
+          echo "::set-output name=id::${ID}"
 
   bats:
-    name: BATS
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Install BATS
-      run: sudo npm install -g bats
+      - name: Install BATS
+        run: sudo npm install -g bats
 
-    - name: Run BATS test
-      run: bats . lib
+      - name: Run BATS test
+        run: bats . lib
 
   shellcheck:
-    name: Shellcheck
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: reviewdog/action-shellcheck@v1
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: github-pr-review
-        level: style
+      - uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          level: style
 
-    - uses: bewuethr/shellcheck-action@v2
+      - uses: bewuethr/shellcheck-action@v2
 
-  deploy:
-    name: Deploy
+  dry-run:
     needs: id
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Create site folder
-      run: mkdir -p _site
+      - name: Create site folder
+        run: mkdir -p _site
 
-    - uses: docker://pandoc/core:2.9
-      name: Pandoc Convert
-      with:
-        args: --from=markdown --to=html5 --output=_site/index.html readme.md
-    
-    - name: Deploy
-      env:
-        GIT_DEPLOY_DIR: _site
-        GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.id }}
-        GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
-      run: ./deploy.sh
+      - uses: docker://pandoc/core:2.9
+        name: Pandoc Convert
+        with:
+          args: --from=markdown --to=html5 --output=_site/index.html readme.md
 
-    - name: Verify deployment
-      env:
-        ID: ${{ needs.id.outputs.id }}
-      run: |
-        git checkout ${ID}
-        ls -la
-        if [[ ! -f index.html ]]; then
-            echo 'index.html missing. Aborting.'
-            exit 1
-        fi
+      - name: Deploy
+        env:
+          GIT_DEPLOY_DIR: _site
+          GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.id }}
+          GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
+        run: ./deploy.sh --dry-run
 
-    - name: Cleanup
-      if: always()
-      env:
-        ID: ${{ needs.id.outputs.id }}
-      run: |
+      - name: Verify deployment
+        env:
+          ID: ${{ needs.id.outputs.id }}
+        run: |
+          git checkout ${ID}
+          ls -la
+          if [[ ! -f index.html ]]; then
+              echo 'index.html missing. Aborting.'
+              exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        env:
+          ID: ${{ needs.id.outputs.id }}
+        run: |
+          git checkout --force ${{ github.sha }}
+          if git show-ref --verify --quiet "refs/heads/${ID}"; then
+              echo "Branch '${ID}' found. Deleting"
+              git branch --delete --force "${ID}"
+          fi
+
+  deploy:
+    needs: id
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create site folder
+        run: mkdir -p _site
+
+      - uses: docker://pandoc/core:2.9
+        name: Pandoc Convert
+        with:
+          args: --from=markdown --to=html5 --output=_site/index.html readme.md
+
+      - name: Deploy
+        env:
+          GIT_DEPLOY_DIR: _site
+          GIT_DEPLOY_BRANCH: ${{ needs.id.outputs.id }}
+          GIT_DEPLOY_REPO: https://${{ secrets.GITHUB_TOKEN}}@github.com/${{ github.repository }}.git
+        run: ./deploy.sh
+
+      - name: Verify deployment
+        env:
+          ID: ${{ needs.id.outputs.id }}
+        run: |
+          git checkout ${ID}
+          ls -la
+          if [[ ! -f index.html ]]; then
+              echo 'index.html missing. Aborting.'
+              exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        env:
+          ID: ${{ needs.id.outputs.id }}
+        run: |
           git checkout --force ${{ github.sha }}
           if git show-ref --verify --quiet "refs/heads/${ID}"; then
               echo "Branch '${ID}' found. Deleting"
               git branch --delete --force "${ID}"
               git push --delete origin "${ID}"
           fi
-  
