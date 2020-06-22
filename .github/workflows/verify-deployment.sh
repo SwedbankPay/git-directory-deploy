@@ -53,6 +53,12 @@ main() {
 
     enable_expanded_output
 
+    current_ref=$(git rev-parse --abbrev-ref HEAD)
+
+    if [[ $current_ref == "HEAD" ]]; then
+        current_ref=$(git rev-parse --verify HEAD)
+    fi
+
     git checkout "$branch_name"
     
     [ $verbose ] && ls -la
@@ -61,6 +67,8 @@ main() {
         echo "No 'index.html' file found. Aborting." 1>&2
         exit 1
     fi
+
+    git checkout --force "$current_ref"
 
     if [ $verify_remote ]; then
         matching_remote_branches=$(git ls-remote --heads origin "$branch_name" | wc -l | xargs)
