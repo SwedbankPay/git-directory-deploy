@@ -179,6 +179,7 @@ batslib_print_kv_single_or_multi() {
   else
     local -i i
     for (( i=1; i < ${#pairs[@]}; i+=2 )); do
+      # shellcheck disable=SC2119
       pairs[$i]="$( batslib_prefix < <(printf '%s' "${pairs[$i]}") )"
     done
     batslib_print_kv_multi "${pairs[@]}"
@@ -197,6 +198,7 @@ batslib_print_kv_single_or_multi() {
 #   STDIN - lines
 # Outputs:
 #   STDOUT - prefixed lines
+# shellcheck disable=SC2120
 batslib_prefix() {
   local -r prefix="${1:-  }"
   local line
@@ -225,6 +227,7 @@ batslib_prefix() {
 batslib_mark() {
   local -r symbol="$1"; shift
   # Sort line numbers.
+  # shellcheck disable=SC2046
   set -- $( sort -nu <<< "$( printf '%d\n' "$@" )" )
 
   local line
