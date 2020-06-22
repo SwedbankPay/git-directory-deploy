@@ -179,7 +179,7 @@ batslib_print_kv_single_or_multi() {
   else
     local -i i
     for (( i=1; i < ${#pairs[@]}; i+=2 )); do
-			# shellcheck disable=SC2119
+      # shellcheck disable=SC2119
       pairs[$i]="$( batslib_prefix < <(printf '%s' "${pairs[$i]}") )"
     done
     batslib_print_kv_multi "${pairs[@]}"

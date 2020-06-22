@@ -114,7 +114,7 @@ assert_equal() {
 # Outputs:
 #   STDERR - details, on failure
 assert_success() {
-	# shellcheck disable=SC2119
+  # shellcheck disable=SC2119
   if (( status != 0 )); then
     { local -ir width=6
       batslib_print_kv_single "$width" 'status' "$status"
@@ -143,7 +143,7 @@ assert_success() {
 #   STDERR - details, on failure
 assert_failure() {
   (( $# > 0 )) && local -r expected="$1"
-	# shellcheck disable=SC2119
+  # shellcheck disable=SC2119
   if (( status == 0 )); then
     batslib_print_kv_single_or_multi 6 'output' "$output" \
       | batslib_decorate 'command succeeded, but it was expected to fail' \
@@ -226,7 +226,7 @@ assert_output() {
   done
 
   if (( is_match_line )) && (( is_match_contained )); then
-		# shellcheck disable=SC2119
+    # shellcheck disable=SC2119
     echo "\`-l' and \`-l <index>' are mutually exclusive" \
       | batslib_decorate 'ERROR: assert_output' \
       | fail
@@ -234,7 +234,7 @@ assert_output() {
   fi
 
   if (( is_mode_partial )) && (( is_mode_regex )); then
-		# shellcheck disable=SC2119
+    # shellcheck disable=SC2119
     echo "\`-p' and \`-r' are mutually exclusive" \
       | batslib_decorate 'ERROR: assert_output' \
       | fail
@@ -245,7 +245,7 @@ assert_output() {
   local -r expected="$1"
 
   if (( is_mode_regex == 1 )) && [[ '' =~ $expected ]] || (( $? == 2 )); then
-		# shellcheck disable=SC2119
+    # shellcheck disable=SC2119
     echo "Invalid extended regular expression: \`$expected'" \
       | batslib_decorate 'ERROR: assert_output' \
       | fail
@@ -255,10 +255,10 @@ assert_output() {
   # Matching.
   if (( is_match_contained )); then
     # Line contained in output.
-		# shellcheck disable=SC2119
+    # shellcheck disable=SC2119
     if (( is_mode_regex )); then
       local -i idx
-			# shellcheck disable=SC2154
+      # shellcheck disable=SC2154
       for (( idx = 0; idx < ${#lines[@]}; ++idx )); do
         [[ ${lines[$idx]} =~ $expected ]] && return 0
       done
@@ -279,7 +279,7 @@ assert_output() {
       for (( idx = 0; idx < ${#lines[@]}; ++idx )); do
         [[ ${lines[$idx]} == *"$expected"* ]] && return 0
       done
-			# shellcheck disable=SC2119
+      # shellcheck disable=SC2119
       { local -ar single=(
           'substring' "$expected"
         )
@@ -297,7 +297,7 @@ assert_output() {
       for (( idx = 0; idx < ${#lines[@]}; ++idx )); do
         [[ ${lines[$idx]} == "$expected" ]] && return 0
       done
-			# shellcheck disable=SC2119
+      # shellcheck disable=SC2119
       { local -ar single=(
           'line'   "$expected"
         )
@@ -315,7 +315,7 @@ assert_output() {
     # Specific line.
     if (( is_mode_regex )); then
       if ! [[ ${lines[$idx]} =~ $expected ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single 5 \
             'index' "$idx" \
             'regex' "$expected" \
@@ -325,7 +325,7 @@ assert_output() {
       fi
     elif (( is_mode_partial )); then
       if [[ ${lines[$idx]} != *"$expected"* ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single 9 \
             'index'     "$idx" \
             'substring' "$expected" \
@@ -335,7 +335,7 @@ assert_output() {
       fi
     else
       if [[ ${lines[$idx]} != "$expected" ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single 8 \
             'index'    "$idx" \
             'expected' "$expected" \
@@ -348,7 +348,7 @@ assert_output() {
     # Entire output.
     if (( is_mode_regex )); then
       if ! [[ $output =~ $expected ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single_or_multi 6 \
             'regex'  "$expected" \
             'output' "$output" \
@@ -357,7 +357,7 @@ assert_output() {
       fi
     elif (( is_mode_partial )); then
       if [[ $output != *"$expected"* ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single_or_multi 9 \
             'substring' "$expected" \
             'output'    "$output" \
@@ -366,7 +366,7 @@ assert_output() {
       fi
     else
       if [[ $output != "$expected" ]]; then
-				# shellcheck disable=SC2119
+        # shellcheck disable=SC2119
         batslib_print_kv_single_or_multi 8 \
             'expected' "$expected" \
             'actual'   "$output" \
@@ -491,7 +491,7 @@ refute_output() {
             if batslib_is_single_line "${may_be_multi[1]}"; then
               batslib_print_kv_single "$width" "${may_be_multi[@]}"
             else
-							# shellcheck disable=SC2119
+              # shellcheck disable=SC2119
               may_be_multi[1]="$( printf '%s' "${may_be_multi[1]}" \
                                     | batslib_prefix \
                                     | batslib_mark '>' "$idx" )"
@@ -519,7 +519,7 @@ refute_output() {
             if batslib_is_single_line "${may_be_multi[1]}"; then
               batslib_print_kv_single "$width" "${may_be_multi[@]}"
             else
-							# shellcheck disable=SC2119
+              # shellcheck disable=SC2119
               may_be_multi[1]="$( printf '%s' "${may_be_multi[1]}" \
                                     | batslib_prefix \
                                     | batslib_mark '>' "$idx" )"
@@ -547,7 +547,7 @@ refute_output() {
             if batslib_is_single_line "${may_be_multi[1]}"; then
               batslib_print_kv_single "$width" "${may_be_multi[@]}"
             else
-							# shellcheck disable=SC2119
+              # shellcheck disable=SC2119
               may_be_multi[1]="$( printf '%s' "${may_be_multi[1]}" \
                                     | batslib_prefix \
                                     | batslib_mark '>' "$idx" )"
@@ -562,7 +562,7 @@ refute_output() {
   elif (( is_match_line )); then
     # Specific line.
     if (( is_mode_regex )); then
-			# shellcheck disable=SC2181
+      # shellcheck disable=SC2181
       if [[ ${lines[$idx]} =~ $unexpected ]] || (( $? == 0 )); then
         batslib_print_kv_single 5 \
             'index' "$idx" \
@@ -592,7 +592,7 @@ refute_output() {
   else
     # Entire output.
     if (( is_mode_regex )); then
-			# shellcheck disable=SC2181
+      # shellcheck disable=SC2181
       if [[ $output =~ $unexpected ]] || (( $? == 0 )); then
         batslib_print_kv_single_or_multi 6 \
             'regex'  "$unexpected" \
