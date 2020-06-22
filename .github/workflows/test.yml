@@ -63,15 +63,7 @@ jobs:
         run: ./deploy.sh --dry-run
 
       - name: Verify deployment
-        env:
-          ID: ${{ needs.id.outputs.id }}
-        run: |
-          git checkout ${ID}
-          ls -la
-          if [[ ! -f index.html ]]; then
-              echo 'index.html missing. Aborting.'
-              exit 1
-          fi
+        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }}
 
       - name: Cleanup
         if: always()
@@ -107,15 +99,7 @@ jobs:
         run: ./deploy.sh
 
       - name: Verify deployment
-        env:
-          ID: ${{ needs.id.outputs.id }}
-        run: |
-          git checkout ${ID}
-          ls -la
-          if [[ ! -f index.html ]]; then
-              echo 'index.html missing. Aborting.'
-              exit 1
-          fi
+        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }} --remote
 
       - name: Cleanup
         if: always()
