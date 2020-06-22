@@ -63,11 +63,11 @@ jobs:
         run: ./deploy.sh --dry-run
 
       - name: Verify deployment
-        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }}
+        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }} --verbose
 
       - name: Cleanup
         if: always()
-        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }}
+        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --verbose
 
   deploy:
     needs: id
@@ -92,8 +92,8 @@ jobs:
         run: ./deploy.sh
 
       - name: Verify deployment
-        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }} --remote
+        run: .github/workflows/verify-deployment.sh --branch ${{ needs.id.outputs.id }} --remote --verbose
 
       - name: Cleanup
         if: always()
-        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --remote
+        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --remote --verbose
