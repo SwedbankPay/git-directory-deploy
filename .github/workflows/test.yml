@@ -96,4 +96,6 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --remote --verbose
+        run: |
+          ls -la .github/workflows
+          .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --remote --verbose
