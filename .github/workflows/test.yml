@@ -67,14 +67,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        env:
-          ID: ${{ needs.id.outputs.id }}
-        run: |
-          git checkout --force ${{ github.sha }}
-          if git show-ref --verify --quiet "refs/heads/${ID}"; then
-              echo "Branch '${ID}' found. Deleting"
-              git branch --delete --force "${ID}"
-          fi
+        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }}
 
   deploy:
     needs: id
@@ -103,12 +96,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        env:
-          ID: ${{ needs.id.outputs.id }}
-        run: |
-          git checkout --force ${{ github.sha }}
-          if git show-ref --verify --quiet "refs/heads/${ID}"; then
-              echo "Branch '${ID}' found. Deleting"
-              git branch --delete --force "${ID}"
-              git push --delete origin "${ID}"
-          fi
+        run: .github/workflows/cleanup.sh --branch ${{ needs.id.outputs.id }} --commit ${{ github.sha }} --remote
