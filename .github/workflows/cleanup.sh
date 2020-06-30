@@ -6,7 +6,6 @@ help_message="\
 Usage:
   $me --branch <branch-name> --commit <commit-sha> [--remote] [--verbose]
   $me --help
-
 Arguments:
   -h, --help                    Displays this help screen
   -b, --branch <branch-name>    The name of the branch to verify.
@@ -62,16 +61,30 @@ main() {
 
     enable_expanded_output
 
+    git fetch --depth=1 origin
+    git config advice.detachedHead false
     git checkout --force "$commit_sha"
+
     if git show-ref --verify --quiet "refs/heads/$branch_name"; then
-        [ $verbose ] && echo "Branch '$branch_name' found. Deleting"
+        [ $verbose ] && echo "Local branch '$branch_name' found. Deleting"
         git branch --delete --force "$branch_name"
+    else
+        [ $verbose ] && echo "Local branch '$branch_name' not found."
+    fi
+
+    if git show-ref --verify --quiet "refs/remotes/origin/$branch_name"; then
+        [ $verbose ] && echo "Origin branch '$branch_name' found."
 
         if [ $cleanup_remote ]; then
-            [ $verbose ] && echo "Deleting '$branch_name' from the remote 'origin'."
+            [ $verbose ] && echo "Deleting branch '$branch_name' from the remote 'origin'."
             git push --delete origin "$branch_name"
+        else
+            [ $verbose ] && echo "Not instructed to clean up remote, so '$branch_name' will be left untouched on 'origin'."
         fi
+    else
+        [ $verbose ] && echo "Origin branch '$branch_name' not found."
     fi
+
 }
 
 main "$@"
