@@ -40,8 +40,6 @@ jobs:
           fail_on_error: true
           shellcheck_flags: --severity=style
 
-      - uses: bewuethr/shellcheck-action@v2
-
   dry-run:
     needs: id
     runs-on: ubuntu-latest
