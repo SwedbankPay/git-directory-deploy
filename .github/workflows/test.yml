@@ -36,9 +36,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
-          level: style
-
-      - uses: bewuethr/shellcheck-action@v2
+          level: info
+          fail_on_error: true
+          shellcheck_flags: --severity=style
 
   dry-run:
     needs: id
